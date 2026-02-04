@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Master Technology Bar - Coctelería Premium</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/gravy_pages/assets/favicon-DSjDLIu8.ico">
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="Master Technology Bar - Experiencia premium en coctelería con tecnología avanzada. Descubre nuestros cócteles únicos y ambiente innovador.">
+  <meta name="keywords" content="coctelería, bar, cócteles, bebidas premium, tecnología, Master Technology Bar">
+  <meta name="author" content="Master Technology Bar">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://localhost:8000/">
+  <meta property="og:title" content="Master Technology Bar - Coctelería Premium">
+  <meta property="og:description"
+    content="Experiencia premium en coctelería con tecnología avanzada. Descubre nuestros cócteles únicos y ambiente innovador.">
+  <meta property="og:image" content="">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="http://localhost:8000/">
+  <meta property="twitter:title" content="Master Technology Bar - Coctelería Premium">
+  <meta property="twitter:description"
+    content="Experiencia premium en coctelería con tecnología avanzada. Descubre nuestros cócteles únicos y ambiente innovador.">
+  <meta property="twitter:image" content="">
+
+  <!-- Cache Control -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700;900&family=Roboto:wght@300;400;500;700&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <!-- CSS fuente para desarrollo (sin pipeline) -->
+  <!-- CSS Source (Vite auto-compiles SCSS) -->
+
+  <!-- Runtime feature flags -->
+  <!-- Runtime feature flags handled by Vite -->
+  <script src="Shared/libs/purify.min.js"></script>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.47.10",
+        "zod": "https://cdn.jsdelivr.net/npm/zod@3.23.8/+esm"
+      }
+    }
+  </script>
+  <script type="module" crossorigin src="/gravy_pages/assets/index-DoWTiArC.js"></script>
+  <link rel="stylesheet" crossorigin href="/gravy_pages/assets/index-SV0FPQTz.css">
+</head>
+
+<body>
+  <!-- Early Theme Injector: Applies user preference BEFORE initial paint to avoid FOUC/Flash of Red -->
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('selectedTheme') || 'light-blue';
+      const savedVideo = localStorage.getItem('selectedVideoUrl') || '';
+      document.body.setAttribute('data-theme', savedTheme);
+      window.__initialThemeApplied = true;
+      // Pre-set video source if possible
+      window.addEventListener('DOMContentLoaded', () => {
+        const video = document.getElementById('background-video');
+        if (video) {
+          const source = video.querySelector('source');
+          if (source) source.src = savedVideo;
+          video.load();
+        }
+      });
+    })();
+  </script>
+
+  <!-- Background video (Source set by Early Injector) -->
+  <video id="background-video" autoplay muted loop playsinline>
+    <source src="" type="video/mp4">
+  </video>
+
+  <!-- Top Navigation Bar (Moved to root for fixed-position stability) -->
+  <div id="top-nav-bar" class="top-nav-bar top-nav-hidden">
+    <div class="top-nav-content">
+      <div class="nav-left">
+        <button id="hamburger-btn" class="hamburger-btn hamburger-hidden">☰</button>
+        <button id="top-back-btn" class="top-nav-btn back-btn-hidden" title="Volver a Licores">←</button>
+      </div>
+      <div class="nav-center">
+        <button id="home-btn" class="nav-button top-nav-btn home-btn" title="Ir al Inicio">
+          <svg viewBox="0 0 24 24" fill="white">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+          </svg>
+        </button>
+        <span id="nav-title"></span>
+      </div>
+      <div class="nav-buttons-container">
+        <!-- Auth Button: Visual System Pillar 4 (Action System) -->
+        <!-- Auth Buttons: Visual System Pillar 4 (Action System) -->
+        <button id="login-btn" class="nav-button top-nav-btn btn-text-mode" title="Iniciar Sesión">
+          Iniciar Sesión
+        </button>
+        <button id="register-btn" class="nav-button top-nav-btn btn-text-mode" title="Registrar Tu Negocio">
+          Registrarse
+        </button>
+        <button id="view-toggle-btn" class="nav-button top-nav-btn view-toggle-btn">🔲</button>
+        <button id="settings-btn" class="nav-button top-nav-btn">⚙️</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" class="app-container">
+    <!-- Drawer moved to bottom of body -->
+
+    <!-- Settings moved to bottom of body -->
+
+    <div class="screen welcome-screen">
+      <h1 class="welcome-text" data-translate="main.welcome">¡BIENVENIDOS!</h1>
+    </div>
+    <div class="screen logo-screen screen-hidden">
+      <div class="logo-container">
+        <img src="" alt="Master Technology Bar Logo" class="logo">
+        <h2 class="title-text" data-translate="main.title">Master Technology Bar</h2>
+      </div>
+    </div>
+    <div class="screen category-title-screen screen-hidden">
+      <h2 class="category-title" data-translate="categories.cocktails">Coctelería</h2>
+    </div>
+    <div class="screen main-content-screen screen-hidden" data-category="cocteleria">
+      <div class="page-header">
+        <!-- Page title removed from here as it's now integrated into tables -->
+      </div>
+      <div class="content-wrapper">
+        <div class="content-container-flex">
+          <div id="content-container"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Order Sidebar (Right) -->
+    <div id="order-sidebar" class="order-sidebar">
+      <div class="order-scroll-layer">
+        <h3 class="drawer-title">Tu Orden</h3>
+        <div id="order-items" class="order-items-scroll">
+          <!-- Order items injected here -->
+        </div>
+      </div>
+      <div class="drawer-footer">
+        <div class="order-summary">
+          <div class="total-row">
+            <span>Total:</span>
+            <span id="order-total-amount" class="total-amount">$0.00</span>
+          </div>
+        </div>
+        <div class="order-actions">
+          <button id="complete-order-btn" class="nav-button primary-btn" data-translate="menu.create_order">
+            Completar
+          </button>
+          <button id="cancel-order-btn" class="nav-button secondary-btn" data-translate="menu.cancel_order">
+            Cancelar
+          </button>
+        </div>
+      </div>
+
+      <!-- SaaS Property Editor Sidebar (Admin Only) -->
+    </div>
+
+    <!-- SaaS Property Editor Sidebar (Admin Only) -->
+
+    <!-- SaaS Property Editor Sidebar (Admin Only) -->
+    <!-- Coexists in Grid Layout (Column 3) -->
+    <div id="property-editor-sidebar" class="property-sidebar">
+      <div class="drawer-content" id="property-editor-content">
+        <!-- Javascript renders full content here including header -->
+      </div>
+    </div>
+
+    <!-- Modals (Dynamically injected) -->
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="drawer-menu" class="drawer-menu">
+      <div class="drawer-content">
+        <!-- Navigation buttons added dynamically -->
+      </div>
+    </div>
+
+    <!-- Settings Menu -->
+    <div id="settings-menu" class="drawer-menu settings-menu">
+      <div class="drawer-content">
+        <!-- Main Settings Panel -->
+        <div id="main-settings-panel" class="settings-panel">
+          <button id="settings-back-btn" class="back-button">→</button>
+          <h3 class="settings-title"></h3>
+          <button id="languages-option" class="nav-button" data-translate="settings.languages">Idiomas</button>
+          <button id="dark-mode-option" class="nav-button" data-translate="settings.dark_mode">Modo Oscuro</button>
+          <button id="light-mode-option" class="nav-button" data-translate="settings.light_mode">Modo Claro</button>
+
+          <!-- Sección de Administración (SaaS) -->
+          <div class="settings-divider"></div>
+          <button id="admin-mode-option" class="nav-button admin-option-btn">
+            <span>Administración</span>
+            <span id="admin-indicator-icon" class="icon">⚙️</span>
+          </button>
+        </div>
+
+        <!-- Languages Panel -->
+        <div id="languages-panel" class="settings-panel u-hidden">
+          <button id="back-to-main" class="back-button">←</button>
+          <h3 class="settings-title" data-translate="settings.languages">Idiomas</h3>
+          <button class="nav-button language-btn" data-lang="es" data-translate="languages.spanish">Español</button>
+          <button class="nav-button language-btn" data-lang="en" data-translate="languages.english">Inglés</button>
+          <button class="nav-button language-btn" data-lang="fr" data-translate="languages.french">Francés</button>
+          <button class="nav-button language-btn" data-lang="it" data-translate="languages.italian">Italiano</button>
+          <button class="nav-button language-btn" data-lang="zh" data-translate="languages.chinese">Chino</button>
+        </div>
+
+        <!-- Dark Mode Panel -->
+        <div id="dark-mode-panel" class="settings-panel u-hidden">
+          <button id="back-from-dark" class="back-button">←</button>
+          <h3 class="settings-title" data-translate="settings.dark_mode">Modo Oscuro</h3>
+          <button class="nav-button theme-btn" data-theme="dark-blue" data-video=""
+            data-translate="themes.dark_blue">Azul Oscuro</button>
+          <button class="nav-button theme-btn" data-theme="dark-red" data-video="" data-translate="themes.dark_red">Rojo
+            Oscuro</button>
+        </div>
+
+        <!-- Light Mode Panel -->
+        <div id="light-mode-panel" class="settings-panel u-hidden">
+          <button id="back-from-light" class="back-button">←</button>
+          <h3 class="settings-title" data-translate="settings.light_mode">Modo Claro</h3>
+          <button class="nav-button theme-btn" data-theme="light-blue" data-video=""
+            data-translate="themes.light_blue">Azul Claro</button>
+          <button class="nav-button theme-btn" data-theme="light-white" data-video=""
+            data-translate="themes.white">Blanco</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Scripts -->
+
+    <!-- Order Sidebar (Right) - Now integrated in Grid -->
+    <!-- Moved to inside .app-container via script or manual internal placement -->
+    <!-- Wait, I need to DELETE it from here and INSERT it above -->
+
+    <!-- Load data providers -->
+
+    <!-- Load UI components -->
+    <!-- Load order system -->
+    <!-- Initialize app -->
+</body>
+
+</html>
