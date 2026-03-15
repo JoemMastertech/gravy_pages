@@ -1,4 +1,4 @@
-import i from"./AuthService-0gN5lHSS.js";import"./index-CCw_zYd4.js";class s{constructor(){this.container=document.createElement("div"),this.container.id="onboarding-modal-container",this.container.className="onboarding-overlay hidden",this.render(),this.bindEvents(),document.body.appendChild(this.container)}render(){this.container.innerHTML=`
+import i from"./AuthService-Bx15Ftkb.js";import"./index-DPLb_Hjl.js";class s{constructor(){this.container=document.createElement("div"),this.container.id="onboarding-modal-container",this.container.className="onboarding-overlay hidden",this.render(),this.bindEvents(),document.body.appendChild(this.container)}render(){this.container.innerHTML=`
             <div class="onboarding-card">
                 <div class="onboarding-header">
                     <span class="icon">🚀</span>
