@@ -32,15 +32,16 @@
     content="Experiencia premium en coctelería con tecnología avanzada. Descubre nuestros cócteles únicos y ambiente innovador.">
   <meta property="twitter:image" content="">
 
-  <!-- Cache Control -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
+  <!-- Cache Control: Only disable browser cache for HTML itself, NOT for media/assets -->
+  <!-- Note: The Service Worker (sw.js) handles media caching. Do NOT add no-store here. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700;900&family=Roboto:wght@300;400;500;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700;900&family=Roboto:wght@300;400;500;700&display=swap"
     rel="stylesheet">
+  <!-- Anti-FOUC: Preload Material Icons font file to prevent icon text flash -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="https://fonts.gstatic.com/s/materialiconsround/v108/LDItaoyNOAY6Uewc665JcIzCKsKc_M9flwmPq_HTTw.woff2">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS fuente para desarrollo (sin pipeline) -->
   <!-- CSS Source (Vite auto-compiles SCSS) -->
@@ -48,7 +49,7 @@
 
   <!-- Runtime feature flags -->
   <!-- Runtime feature flags handled by Vite -->
-  <script src="/gravy_pages/libs/purify.min.js"></script>
+  <script src="./libs/purify.min.js"></script>
 
   <!-- Anti-FOUC Font Fix: Force Playfair for titles immediately -->
   <style>
@@ -60,6 +61,9 @@
     }
   </style>
 
+  <!-- 🕵️ DIAGNÓSTICO DE RECARGAS DE VITE (Externalizado para evitar errores de proxy) 🕵️ -->
+
+
   <script type="importmap">
     {
       "imports": {
@@ -68,74 +72,68 @@
       }
     }
   </script>
-  <script type="module" crossorigin src="/gravy_pages/assets/index-DPLb_Hjl.js"></script>
-  <link rel="stylesheet" crossorigin href="/gravy_pages/assets/index-D0CsH3v8.css">
+  <script type="module" crossorigin src="/assets/index-D1pD3bPw.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DmV2S_VM.css">
 </head>
 
 <body>
   <!-- Early Theme Injector: Applies user preference BEFORE initial paint to avoid FOUC/Flash of Red -->
-  <script>
-    (function () {
-      const savedTheme = localStorage.getItem('selectedTheme') || 'light-blue';
-      const savedVideo = localStorage.getItem('selectedVideoUrl') || '';
-      const savedScale = localStorage.getItem('sat_logo_scale') || 'small';
-
-      document.body.setAttribute('data-theme', savedTheme);
-      document.documentElement.style.setProperty('--logo-current-size', `var(--logo-size-${savedScale})`);
-      
-      window.__initialThemeApplied = true;
-      // Pre-set video source if possible
-      window.addEventListener('DOMContentLoaded', () => {
-        const video = document.getElementById('background-video');
-        if (video) {
-          const source = video.querySelector('source');
-          if (source) source.src = savedVideo;
-          video.load();
-        }
-      });
-    })();
-  </script>
+  <script src="./src/theme-injector.js"></script>
 
   <!-- Background video (Source set by Early Injector) -->
   <video id="background-video" autoplay muted loop playsinline>
     <source src="" type="video/mp4">
   </video>
 
-  <!-- Top Navigation Bar (Moved to root for fixed-position stability) -->
-  <div id="top-nav-bar" class="top-nav-bar top-nav-hidden">
-    <div class="top-nav-content">
-      <div class="nav-left">
-        <button id="hamburger-btn" class="hamburger-btn hamburger-hidden">☰</button>
-        <button id="top-back-btn" class="top-nav-btn back-btn-hidden" title="Volver a Licores">←</button>
-      </div>
-      <div class="nav-center">
-        <button id="home-btn" class="nav-button top-nav-btn home-btn" title="Ir al Inicio">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-          </svg>
-        </button>
-        <span id="nav-title"></span>
-      </div>
-      <div class="nav-buttons-container">
-        <!-- Auth Button: Visual System Pillar 4 (Action System) -->
-        <!-- Auth Buttons: Visual System Pillar 4 (Action System) -->
-        <button id="login-btn" class="nav-button top-nav-btn btn-text-mode" title="Iniciar Sesión">
-          Iniciar Sesión
-        </button>
-        <button id="register-btn" class="nav-button top-nav-btn btn-text-mode" title="Registrar Tu Negocio">
-          Registrarse
-        </button>
-        <button id="view-toggle-btn" class="nav-button top-nav-btn view-toggle-btn" title="Cambiar vista">🔲</button>
-        <button id="settings-btn" class="nav-button top-nav-btn">⚙️</button>
+  <div id="app" class="app-container">
+    <!-- Top Navigation Bar (Integrated into Container) -->
+    <div id="top-nav-bar" class="top-nav-bar top-nav-hidden">
+      <div class="top-nav-content">
+        <div class="nav-left">
+          <button id="hamburger-btn" class="hamburger-btn hamburger-hidden">☰</button>
+          <button id="top-back-btn" class="top-nav-btn back-btn-hidden" title="Volver a Licores">←</button>
+        </div>
+        <div class="nav-center">
+          <button id="home-btn" class="nav-button top-nav-btn home-btn" title="Ir al Inicio">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>
+          </button>
+          <span id="nav-title"></span>
+        </div>
+        <div class="nav-buttons-container">
+          <button id="header-create-order-btn" class="nav-button top-nav-btn btn-text-mode" title="Crear Orden"
+            data-translate-target="true" data-key="nav-create-order">
+            Crear<br>Orden
+          </button>
+          <button id="login-btn" class="nav-button top-nav-btn btn-text-mode" title="Iniciar Sesión"
+            data-translate-target="true" data-key="nav-login">
+            Iniciar<br>Sesión
+          </button>
+          <button id="register-btn" class="nav-button top-nav-btn btn-text-mode" title="Registro"
+            data-translate-target="true" data-key="nav-register">
+            Registro
+          </button>
+          <button id="view-toggle-btn" class="nav-button top-nav-btn view-toggle-btn" title="Cambiar vista">🔲</button>
+          <!-- Mini Joe: visible solo en portrait con orden abierta (CSS toggle via :has) -->
+          <button 
+            id="nav-joe-mini-btn"
+            class="nav-button top-nav-btn joe-mini-nav-btn"
+            title="Hablar con Joe"
+            onclick="window.dispatchEvent(new CustomEvent('waiter:controlar_chat', { detail: { accion: 'expandir' } }))"
+            aria-label="Abrir asistente Joe"
+          >
+            <img 
+              src="https://udtlqjmrtbcpdqknwuro.supabase.co/storage/v1/object/public/productos/recursos/Mesero/Joe_formal.png" 
+              alt="Joe"
+            />
+          </button>
+          <button id="settings-btn" class="nav-button top-nav-btn">⚙️</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div id="app" class="app-container">
-    <!-- Drawer moved to bottom of body -->
-
-    <!-- Settings moved to bottom of body -->
-
+    <!-- Screens -->
     <div class="screen welcome-screen">
       <h1 class="welcome-text" data-translate-target="true" data-translate="main.welcome">¡BIENVENIDOS!</h1>
     </div>
@@ -154,7 +152,10 @@
       </div>
       <div class="content-wrapper">
         <div class="content-container-flex">
-          <div id="content-container"></div>
+          <div id="content-container" class="content-container">
+            <div id="slot-a" class="slot active" aria-live="polite"></div>
+            <div id="slot-b" class="slot hidden" aria-live="polite"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -165,26 +166,8 @@
     <!-- SaaS Property Editor Sidebar (Admin Only) -->
     <!-- Coexists in Grid Layout (Column 3) -->
     <div id="property-editor-sidebar" class="property-sidebar">
-      <div class="admin-panel-container" style="height: 100%; display: flex; flex-direction: column;">
-          <header class="admin-header" style="flex: 0 0 auto;">
-              <div class="header-title-block">
-                  <div class="icon-box">
-                      <span class="material-icons-round">edit</span>
-                  </div>
-                  <h1 style="color: white; margin: 0; font-size: 1.1rem;">Panel de Edición</h1>
-              </div>
-              <div class="header-actions">
-                  <button id="native-close-editor-btn" class="btn-icon-ghost exit-admin-btn" title="Cerrar Editor">
-                      <span class="material-icons-round">close</span>
-                  </button>
-              </div>
-          </header>
-          
-          <div class="drawer-content" id="property-editor-content" style="flex: 1 1 auto; overflow-y: auto; padding: 0;">
-            <!-- El contenedor exclusivo para Preact -->
-            <div id="property-editor-preact-root"></div>
-          </div>
-      </div>
+      <!-- Preact handles the entire internal structure and grid -->
+      <div id="property-editor-preact-root"></div>
     </div>
 
     <!-- Modals (Dynamically injected) -->
@@ -212,14 +195,17 @@
 
           <!-- Sección de Administración (SaaS) -->
           <div class="settings-divider"></div>
-          <button id="admin-mode-option" class="nav-button admin-option-btn">
+          <button id="admin-mode-option" class="nav-button admin-option-btn"
+            data-translate-target="true" data-key="settings-admin-mode">
             <span>Acceso Clientes</span>
             <span id="admin-indicator-icon" class="icon">⚙️</span>
           </button>
+          <div id="editor-active-status" class="u-hidden" data-translate-target="true" data-key="settings-editor-mode-active">Modo Edición</div>
 
           <!-- Botón de Cerrar Sesión (Sólo visible logueado) -->
           <button id="logout-option" class="nav-button logout-option-btn u-hidden"
-            style="display: none; color: #ff4d4d;">
+            style="display: none; color: #ff4d4d;"
+            data-translate-target="true" data-key="settings-logout">
             <span>Cerrar Sesión</span>
             <span class="icon">🚪</span>
           </button>
@@ -275,6 +261,33 @@
     <!-- Load UI components -->
     <!-- Load order system -->
     <!-- Initialize app -->
-</body>
 
+    <!-- ─── Motor de Caché Inteligente (Service Worker) ─── -->
+    <!-- Intercepts Supabase Storage requests to cache media locally and cut Egress usage -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          // Register SW at root scope to cover all Supabase storage requests
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(registration => {
+              console.log('[Media Cache] ✅ Service Worker armado y operando en:', registration.scope);
+              // Force immediate activation if waiting
+              if (registration.waiting) {
+                registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+              }
+            })
+            .catch(err => {
+              console.warn('[Media Cache] ⚠️ Fallo la inicialización del SW:', err);
+            });
+
+          // Listen for SW updates
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('[Media Cache] 🔄 Service Worker actualizado.');
+          });
+        });
+      } else {
+        console.warn('[Media Cache] ⚠️ Service Workers no soportados en este browser.');
+      }
+    </script>
+</body>
 </html>

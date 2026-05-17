@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  .box1 {
+    font-size: clamp(22px, 6.6vw, 53px);
+  }
+  .box2 {
+    font-size: calc(clamp(22px, 6.6vw, 53px) * 1.5);
+  }
+</style>
+</head>
+<body>
+  <div id="test1" class="box1">Box 1</div>
+  <div id="test2" class="box2">Box 2</div>
+  <script>
+    const box1 = getComputedStyle(document.getElementById('test1')).fontSize;
+    const box2 = getComputedStyle(document.getElementById('test2')).fontSize;
+    document.body.innerHTML += `<div>Box 1 computed: ${box1}</div><div>Box 2 computed: ${box2}</div>`;
+  </script>
+</body>
+</html>
