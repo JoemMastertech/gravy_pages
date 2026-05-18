@@ -3,7 +3,16 @@
  * Applies user preference BEFORE initial paint to avoid FOUC/Flash of Red
  */
 (function () {
-  const savedTheme = localStorage.getItem('selectedTheme') || 'light-blue';
+  let savedTheme = localStorage.getItem('selectedTheme') || 'bg_light_blue';
+  
+  // Normalize theme name to match Zod Schema and variables
+  savedTheme = savedTheme.replace(/-/g, '_');
+  if (!savedTheme.startsWith('bg_')) {
+    savedTheme = `bg_${savedTheme}`;
+  }
+  savedTheme = savedTheme.replace('light_white', 'white');
+  savedTheme = savedTheme.replace('bg_light_white', 'bg_white');
+
   const savedVideo = localStorage.getItem('selectedVideoUrl') || '';
   const savedScale = localStorage.getItem('sat_logo_scale') || 'small';
 
