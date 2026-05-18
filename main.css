@@ -2096,6 +2096,12 @@
   @media (max-width: 480px) and (orientation: portrait) {
     .top-nav-content {
       padding: 0 var(--spacing-sm-elastic);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .top-nav-content::-webkit-scrollbar {
+      display: none;
     }
   }
   .nav-left,
@@ -2109,6 +2115,7 @@
     .nav-left,
     .nav-buttons-container {
       gap: var(--spacing-xs-elastic);
+      flex-shrink: 0;
     }
   }
   .nav-center {
@@ -2116,6 +2123,11 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
+  }
+  @media (max-width: 480px) and (orientation: portrait) {
+    .nav-center {
+      flex-shrink: 0;
+    }
   }
   .nav-center #nav-title {
     font-family: "Montserrat", sans-serif;
