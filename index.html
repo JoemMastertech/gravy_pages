@@ -72,8 +72,8 @@
       }
     }
   </script>
-  <script type="module" crossorigin src="/assets/index-D1pD3bPw.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DmV2S_VM.css">
+  <script type="module" crossorigin src="./assets/index-BpHsyFly.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DmV2S_VM.css">
 </head>
 
 <body>
@@ -267,8 +267,11 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          // Register SW at root scope to cover all Supabase storage requests
-          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          // Calcular el path base dinámicamente para soportar subdirectorios (ej: GitHub Pages)
+          const baseDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+          const swUrl = baseDir + 'sw.js';
+          
+          navigator.serviceWorker.register(swUrl, { scope: baseDir })
             .then(registration => {
               console.log('[Media Cache] ✅ Service Worker armado y operando en:', registration.scope);
               // Force immediate activation if waiting
