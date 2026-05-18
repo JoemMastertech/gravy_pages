@@ -11,7 +11,7 @@
 //  • Próximas recargas de la misma página → 100% desde caché local.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = 'gravy-media-cache-v4';
+const CACHE_NAME = 'gravy-media-cache-v5';
 
 const SUPABASE_STORAGE_PATTERN = /supabase\.co\/storage\/v1\/object\/public\//;
 const MEDIA_EXTENSIONS = /\.(webp|jpg|jpeg|png|svg|gif)(\?.*)?$/i;
@@ -66,6 +66,12 @@ self.addEventListener('fetch', (event) => {
 
                 if (cached) {
                     // ✅ Ya está en caché — respuesta instantánea, 0 egress
+                    const isRange = request.headers.has('Range');
+                    if (isRange) {
+                        console.debug(`[SW v5] 🎯 Cache HIT de Video (range): ${_shortName(request.url)}`);
+                        return serveRange(cached, request.headers.get('Range'));
+                    }
+                    console.debug(`[SW v5] 🎯 Cache HIT de Video: ${_shortName(request.url)}`);
                     return cached;
                 }
 
