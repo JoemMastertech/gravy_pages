@@ -85,6 +85,12 @@ self.addEventListener('fetch', (event) => {
                 // NO hacemos await — esto ocurre en paralelo sin bloquear
                 if (networkResponse.ok) {
                     cache.put(cacheKey, networkResponse.clone());
+
+                    // ✅ FIX iOS: Si Safari/Navegador pidió un rango, servir como 206
+                    const isRange = request.headers.has('Range');
+                    if (isRange) {
+                        return serveRange(networkResponse, request.headers.get('Range'));
+                    }
                 }
 
                 return networkResponse;
