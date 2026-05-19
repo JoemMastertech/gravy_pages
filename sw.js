@@ -11,7 +11,7 @@
 //  • Próximas recargas de la misma página → 100% desde caché local.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = 'gravy-media-cache-v5';
+const CACHE_NAME = 'gravy-media-cache-v6';
 
 const SUPABASE_STORAGE_PATTERN = /supabase\.co\/storage\/v1\/object\/public\//;
 const MEDIA_EXTENSIONS = /\.(webp|jpg|jpeg|png|svg|gif)(\?.*)?$/i;
