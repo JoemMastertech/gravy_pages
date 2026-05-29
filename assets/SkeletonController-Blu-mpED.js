@@ -1,11 +1,11 @@
-import{L as r}from"./index-CgT0W5xw.js";class o{constructor(e){this.store=e,this.containerId="content-container",this.activeSkeleton=null,this._unsubscribe=null}init(){if(!this.store){r.error("[SkeletonController] No TenantStore provided");return}r.info("[SkeletonController] Initializing subscription to TenantStore..."),this._unsubscribe=this.store.subscribe(e=>{e.status==="LOADING"?this.renderSkeleton():e.status==="READY"||e.status==="GUEST"?(this.clearSkeleton(),document.dispatchEvent(new CustomEvent("TENANT_READY",{detail:{status:e.status,restaurantId:e.restaurantId}}))):e.status==="ERROR"&&this.renderError()})}injectInto(e){e&&(r.info("[SkeletonController] Inyectando skeleton en slot..."),this._drawSkeleton(e))}renderSkeleton(){const e=document.getElementById(this.containerId);e&&(this.activeSkeleton||(r.info("[SkeletonController] Rendering Shimmer Skeleton..."),this._drawSkeleton(e)))}_drawSkeleton(e){const t=document.createElement("div");if(t.className="skeleton-hub",t.setAttribute("role","status"),t.setAttribute("aria-label","Cargando contenido..."),t.innerHTML=`
+import{L as i}from"./index-CVBilBkI.js";class o{constructor(e){this.store=e,this.containerId="content-container",this.activeSkeleton=null,this._unsubscribe=null}init(){if(!this.store){i.error("[SkeletonController] No TenantStore provided");return}this._unsubscribe=this.store.subscribe(e=>{e.status==="LOADING"?this.renderSkeleton():e.status==="READY"||e.status==="GUEST"?(this.clearSkeleton(),document.dispatchEvent(new CustomEvent("TENANT_READY",{detail:{status:e.status,restaurantId:e.restaurantId}}))):e.status==="ERROR"&&this.renderError()})}injectInto(e){e&&this._drawSkeleton(e)}renderSkeleton(){const e=document.getElementById(this.containerId);e&&(this.activeSkeleton||this._drawSkeleton(e))}_drawSkeleton(e){const t=document.createElement("div");if(t.className="skeleton-hub",t.setAttribute("role","status"),t.setAttribute("aria-label","Cargando contenido..."),t.innerHTML=`
             <div class="skeleton-header">
                 <div class="shimmer title-shimmer"></div>
             </div>
             <div class="skeleton-grid">
                 ${Array(8).fill('<div class="shimmer card-shimmer"></div>').join("")}
             </div>
-        `,!document.getElementById("skeleton-styles")){const n=document.createElement("style");n.id="skeleton-styles",n.innerHTML=`
+        `,!document.getElementById("skeleton-styles")){const r=document.createElement("style");r.id="skeleton-styles",r.innerHTML=`
                 .skeleton-hub { padding: 20px; width: 100%; display: flex; flex-direction: column; gap: 20px; }
                 .shimmer {
                     background: #f6f7f8;
@@ -42,7 +42,7 @@ import{L as r}from"./index-CgT0W5xw.js";class o{constructor(e){this.store=e,this
                     0% { background-position: -468px 0; }
                     100% { background-position: 468px 0; }
                 }
-            `,document.head.appendChild(n)}e.innerHTML="",e.appendChild(t),e.id===this.containerId&&(this.activeSkeleton=t)}clearSkeleton(){this.activeSkeleton&&(r.info("[SkeletonController] Clearing Skeleton..."),this.activeSkeleton.remove(),this.activeSkeleton=null)}renderError(){const e=document.getElementById(this.containerId);e&&(this.clearSkeleton(),e.innerHTML=`
+            `,document.head.appendChild(r)}e.innerHTML="",e.appendChild(t),e.id===this.containerId&&(this.activeSkeleton=t)}clearSkeleton(){this.activeSkeleton&&(this.activeSkeleton.remove(),this.activeSkeleton=null)}renderError(){const e=document.getElementById(this.containerId);e&&(this.clearSkeleton(),e.innerHTML=`
             <div class="error-container" style="text-align: center; padding: 40px;">
                 <h3 style="color: var(--color-bad);" data-translate="true" data-key="error-de-conexi-n" data-namespace="errors">Error de conexión</h3>
                 <p data-translate="true" data-key="no-se-pudo-cargar-el-perfil-del-establec" data-namespace="errors">No se pudo cargar el perfil del establecimiento. Por favor, recarga la página.</p>
