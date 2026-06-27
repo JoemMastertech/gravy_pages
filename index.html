@@ -72,7 +72,7 @@
       }
     }
   </script>
-  <script type="module" crossorigin src="./assets/index-CMapGOnE.js"></script>
+  <script type="module" crossorigin src="./assets/index-DEW4vG3z.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-DE5_5jiu.css">
 </head>
 
@@ -81,7 +81,7 @@
   <script src="./theme-injector.js"></script>
 
   <!-- Background video (Source set by Early Injector) -->
-  <video id="background-video" autoplay muted loop playsinline>
+  <video id="background-video" autoplay muted loop playsinline poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
     <source src="" type="video/mp4">
   </video>
 
@@ -294,5 +294,13 @@
         console.warn('[Media Cache] ⚠️ Service Workers no soportados en este browser.');
       }
     </script>
+  <div id="offline-sync-bar" class="offline-sync-bar u-hidden">
+    <div class="sync-progress-container">
+      <span class="sync-text">Sincronizando catálogo offline... <span id="sync-percentage">0%</span></span>
+      <div class="sync-progress-track">
+        <div id="sync-progress-fill" class="sync-progress-fill"></div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
