@@ -1,4 +1,4 @@
-import o from"./SidebarManager-Cz_KV2Za.js";import{i}from"./index-Djd6FsKH.js";const m={config:{drawerId:"order-sidebar",backdropId:"sidebar-backdrop",activeClass:"active",openClass:"is-open",appContainerSelector:".app-container",openAttribute:"data-sidebar-state",openValue:"open",desktopBreakpoint:1280},mount(){if(document.getElementById(this.config.drawerId))return;const e=document.createElement("div");e.id=this.config.drawerId,e.className="order-sidebar",e.innerHTML=`
+import o from"./SidebarManager-Cz_KV2Za.js";import{i}from"./index-CWk_ZrBE.js";const m={config:{drawerId:"order-sidebar",backdropId:"sidebar-backdrop",activeClass:"active",openClass:"is-open",appContainerSelector:".app-container",openAttribute:"data-sidebar-state",openValue:"open",desktopBreakpoint:1280},mount(){if(document.getElementById(this.config.drawerId))return;const e=document.createElement("div");e.id=this.config.drawerId,e.className="order-sidebar",e.innerHTML=`
           <div class="order-scroll-layer">
             <h3 class="drawer-title" data-translate="true" data-key="drawer.title" data-namespace="menu">Tu Orden</h3>
             <div id="order-items" class="order-items-scroll"></div>
@@ -11,9 +11,9 @@ import o from"./SidebarManager-Cz_KV2Za.js";import{i}from"./index-Djd6FsKH.js";c
               </div>
             </div>
             <div class="order-actions">
-              <button id="complete-order-btn" class="nav-button primary-btn"
+              <button id="complete-order-btn" class="order-action-btn primary-btn"
                       data-translate="true" data-key="menu.create_order" data-namespace="general">Completar</button>
-              <button id="cancel-order-btn" class="nav-button secondary-btn"
+              <button id="cancel-order-btn" class="order-action-btn secondary-btn"
                       data-translate="true" data-key="menu.cancel_order" data-namespace="general">Cancelar</button>
             </div>
           </div>
