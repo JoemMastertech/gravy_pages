@@ -72,7 +72,7 @@
       }
     }
   </script>
-  <script type="module" crossorigin src="./assets/index-C239QoHQ.js"></script>
+  <script type="module" crossorigin src="./assets/index-BdLZ7wrC.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-CorqPrMk.css">
 </head>
 
@@ -113,6 +113,13 @@
           <button id="register-btn" class="nav-button top-nav-btn btn-text-mode" title="Registrarse"
             data-translate-target="true" data-key="nav-register">
             Registrarse
+          </button>
+          <button id="header-waiter-notifications-btn" class="nav-button top-nav-btn waiter-only-btn" title="Notificaciones">
+            <span class="material-icons-round">notifications</span>
+            <span class="waiter-bell-badge" style="display: none;">0</span>
+          </button>
+          <button id="header-waiter-tables-btn" class="nav-button top-nav-btn waiter-only-btn" title="Mis Mesas">
+            <span class="material-icons-round">table_restaurant</span>
           </button>
           <button id="view-toggle-btn" class="nav-button top-nav-btn view-toggle-btn" title="Cambiar vista">🔲</button>
           <!-- Mini Joe: visible solo en portrait con orden abierta (CSS toggle via :has) -->
@@ -210,6 +217,13 @@
             data-translate-target="true" data-key="settings-logout">
             <span>Cerrar Sesión</span>
             <span class="icon">🚪</span>
+          </button>
+
+          <!-- Botón de Cerrar Modo Mesero -->
+          <button id="waiter-logout-btn" class="nav-button waiter-only-btn"
+            style="display: none; color: #ff9800;">
+            <span>Cerrar Modo Mesero</span>
+            <span class="icon">🏃</span>
           </button>
         </div>
 
