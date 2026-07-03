@@ -1,210 +1,185 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// GRAVY MEDIA CACHE — Service Worker v4
-// Propósito: Cachear medios de Supabase Storage, incluyendo videos que el
-//            navegador solicita via Range requests (206 Partial Content).
-//
-// Estrategia:
-//  • Intercepta peticiones GET a Supabase Storage
-//  • Si ya está en caché → sirve el contenido local (egress = 0)
-//  • Si es Range request y NO está cacheado → descarga el archivo COMPLETO (200),
-//    lo guarda en caché, luego sirve el fragmento solicitado como 206.
-//  • Próximas recargas de la misma página → 100% desde caché local.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Gravy3 Service Worker — Offline-First Proxy
+ * 
+ * Intercepta todas las peticiones HTTP de la aplicación.
+ * Para llamadas a supabase.co aplica estrategias diferenciadas según el endpoint:
+ *   - auth/v1/*        → NetworkOnly con fallback 503 (AuthGateway maneja la sesión local)
+ *   - rest/v1/*        → NetworkFirst con fallback 503 (repositorios locales manejan caché)
+ *   - storage/v1/*     → CacheFirst con LRU (multimedia del menú funciona offline)
+ *   - otros            → pass-through sin intervención
+ * 
+ * Para assets propios de la app aplica CacheFirst desde el shell pre-cacheado.
+ *
+ * Cachés gestionados:
+ *   gravy3-shell-v1   — App shell (HTML, JS, CSS)
+ *   gravy3-media-v1   — Multimedia del menú (imágenes y videos de Supabase Storage)
+ */
 
-const CACHE_NAME = 'gravy-media-cache-v6';
+const SHELL_CACHE  = 'gravy3-shell-v1';
+const MEDIA_CACHE  = 'gravy3-media-v1';
+const SUPABASE_HOST = 'udtlqjmrtbcpdqknwuro.supabase.co';
 
-const SUPABASE_STORAGE_PATTERN = /supabase\.co\/storage\/v1\/object\/public\//;
-const MEDIA_EXTENSIONS = /\.(webp|jpg|jpeg|png|svg|gif)(\?.*)?$/i;
+// Límite LRU para el caché de multimedia.
+// ~300 entradas cubre un menú completo con imágenes + miniaturas de video.
+const MEDIA_MAX_ENTRIES = 300;
 
-// ─── 1. Instalar ──────────────────────────────────────────────────────────────
-self.addEventListener('install', () => {
-    console.log('[SW v4] Instalado.');
-    self.skipWaiting();
+// Cachés conocidos — todos los demás se eliminan en activate para evitar acumulación.
+const KNOWN_CACHES = [SHELL_CACHE, MEDIA_CACHE];
+
+// ── Instalación: pre-cachear el app shell ────────────────────────────────────
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(SHELL_CACHE).then((cache) => {
+      return cache.addAll([
+        '/',
+        '/index.html',
+      ]).catch(() => {
+        // Silenciar fallos de pre-cache en dev (assets con hash cambian en cada build)
+      });
+    })
+  );
+  self.skipWaiting();
 });
 
-// ─── 2. Activar: eliminar cachés de versiones anteriores ─────────────────────
+// ── Activación: limpiar cachés antiguas ──────────────────────────────────────
 self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys()
-            .then((names) => Promise.all(
-                names
-                    .filter(n => n !== CACHE_NAME)
-                    .map(n => {
-                        console.log(`[SW v4] Eliminando caché viejo: ${n}`);
-                        return caches.delete(n);
-                    })
-            ))
-            .then(() => {
-                console.log('[SW v4] Activo. Tomando control de todos los clientes.');
-                return self.clients.claim();
-            })
-    );
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          // Conservar los cachés conocidos; eliminar versiones antiguas o huérfanas
+          .filter((key) => !KNOWN_CACHES.includes(key))
+          .map((key) => caches.delete(key))
+      )
+    )
+  );
+  self.clients.claim();
 });
 
-// ─── 3. Mensaje SKIP_WAITING ──────────────────────────────────────────────────
-self.addEventListener('message', (event) => {
-    if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
-});
-
-// ─── 4. Interceptar peticiones ────────────────────────────────────────────────
+// ── Interceptor de fetch ──────────────────────────────────────────────────────
 self.addEventListener('fetch', (event) => {
-    const { request } = event;
-    const url = new URL(request.url);
+  const request = event.request;
 
-    // ✅ Cache-First con Background Fetch para Videos
-    // Recuperamos el bypass para ahorrar egress sin bloquear la UI inicial
-    const isVideo = /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url.pathname);
+  // Solo interceptamos GET y POST; ignoramos el resto (PUT, DELETE, etc. pasan directo)
+  if (request.method !== 'GET' && request.method !== 'POST') return;
 
-    if (isVideo) {
-        event.respondWith(
-            caches.open(CACHE_NAME).then(async (cache) => {
-                
-                // Construir clave de caché sin headers Range
-                // (los Range requests no se pueden cachear directamente)
-                const cacheKey = url.origin + url.pathname;
-                const cached = await cache.match(cacheKey);
+  const url = new URL(request.url);
 
-                if (cached) {
-                    // ✅ Ya está en caché — respuesta instantánea, 0 egress
-                    const isRange = request.headers.has('Range');
-                    if (isRange) {
-                        console.debug(`[SW v5] 🎯 Cache HIT de Video (range): ${_shortName(request.url)}`);
-                        return serveRange(cached, request.headers.get('Range'));
-                    }
-                    console.debug(`[SW v5] 🎯 Cache HIT de Video: ${_shortName(request.url)}`);
-                    return cached;
-                }
+  // === Llamadas a Supabase ===
+  if (url.hostname === SUPABASE_HOST) {
+    event.respondWith(handleSupabaseRequest(request, url));
+    return;
+  }
 
-                // 🌐 No está en caché — fetch directo SIN bloquear
-                // El navegador hace su Range Request nativo (HTTP 206, rápido)
-                const networkResponse = await fetch(
-                    new Request(url.href, { method: 'GET' })
-                );
-
-                // Cachear en background solo si la respuesta fue exitosa
-                // NO hacemos await — esto ocurre en paralelo sin bloquear
-                if (networkResponse.ok) {
-                    cache.put(cacheKey, networkResponse.clone());
-                }
-
-                return networkResponse;
-            })
-        );
-        return; // importante: salir del listener para este caso
-    }
-    if (request.method !== 'GET') return;
-
-    const rawUrl = request.url;
-    if (!SUPABASE_STORAGE_PATTERN.test(rawUrl) || !MEDIA_EXTENSIONS.test(rawUrl)) return;
-
-    event.respondWith(handleMediaRequest(request));
+  // === Assets propios de la app: CacheFirst ===
+  if (url.origin === self.location.origin) {
+    event.respondWith(handleAppAsset(request));
+  }
 });
 
-// ─── Handler principal ────────────────────────────────────────────────────────
-async function handleMediaRequest(request) {
-    const cache      = await caches.open(CACHE_NAME);
-    const isRange    = request.headers.has('Range');
-    const rangeHdr   = isRange ? request.headers.get('Range') : null;
-
-    // Clave de caché sin cabecera Range (siempre buscamos el archivo completo)
-    const cacheKey = new Request(request.url, { method: 'GET' });
-
-    // ── Paso 1: Buscar en caché local ─────────────────────────────────────────
-    const cached = await cache.match(cacheKey, { ignoreVary: true });
-    if (cached) {
-        if (isRange) {
-            // ✅ Cache HIT en Range request — servimos slice sin tocar Supabase
-            console.debug(`[SW v4] 🎯 Cache HIT (range): ${_shortName(request.url)}`);
-            return serveRange(cached, rangeHdr);
-        }
-        console.debug(`[SW v4] 🎯 Cache HIT: ${_shortName(request.url)}`);
-        return cached;
-    }
-
-    // ── Paso 2: No está en caché — descargar ARCHIVO COMPLETO ─────────────────
-    // Se descarta la cabecera Range para forzar una respuesta 200 completa
-    // que sí podemos guardar en caché.
-    const fullRequest = new Request(request.url, { method: 'GET' });
-
+// ── Estrategia por ruta de Supabase ──────────────────────────────────────────
+async function handleSupabaseRequest(request, url) {
+  // Auth tokens: NetworkOnly con fallback 503 controlado.
+  // AuthGateway en el hilo principal conserva la sesión snapshot local.
+  if (url.pathname.startsWith('/auth/v1/')) {
     try {
-        const response = await fetch(fullRequest);
-
-        if (response.status === 200 && response.ok) {
-            // Guardar copia completa en caché (no bloquea la respuesta)
-            const forCache = response.clone();
-            cache.put(cacheKey, forCache)
-                .then(() => console.log(`[SW v4] 💾 Cacheado: ${_shortName(request.url)}`))
-                .catch(err => console.warn('[SW v4] Error al cachear:', err));
-
-            if (isRange) {
-                // Servimos el fragmento solicitado desde la respuesta recién descargada
-                return serveRange(response, rangeHdr);
-            }
-            return response;
+      return await fetch(request);
+    } catch {
+      // Devolvemos 503 para que GoTrue no marque la sesión como inválida
+      // sino simplemente informe que la red no está disponible.
+      return new Response(
+        JSON.stringify({ error: 'offline', message: 'No network available' }),
+        {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' }
         }
-
-        // Respuesta inesperada (4xx, 5xx): la pasamos al browser sin cachear
-        console.warn(`[SW v4] ⚠️ Respuesta no cacheable (${response.status}): ${_shortName(request.url)}`);
-        return response;
-
-    } catch (error) {
-        console.error('[SW v4] ❌ Error de red:', error);
-        return new Response('Network error — recurso no disponible.', { status: 503 });
+      );
     }
+  }
+
+  // REST API (catálogo, perfil, waiter_settings...): NetworkFirst con fallback 503.
+  // Los repositorios locales (IndexedDB) son la fuente de verdad offline.
+  if (url.pathname.startsWith('/rest/v1/')) {
+    try {
+      return await fetch(request);
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'offline', message: 'No network available' }),
+        {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+  }
+
+  // Storage de Supabase (imágenes y videos del menú): CacheFirst con LRU.
+  // Si está en caché → sirve offline inmediatamente.
+  // Si no está en caché y hay red → descarga, guarda y sirve.
+  // Si no está en caché y no hay red → 503 limpio.
+  if (url.pathname.startsWith('/storage/v1/object/public/')) {
+    return handleMediaAsset(request);
+  }
+
+  // Edge Functions y cualquier otra ruta de Supabase: NetworkOnly, sin fallback.
+  try {
+    return await fetch(request);
+  } catch {
+    return new Response('', { status: 503, statusText: 'Offline' });
+  }
 }
 
-// ─── Sirve un fragmento (Range) desde una respuesta completa ─────────────────
-async function serveRange(fullResponse, rangeHeader) {
-    const blob      = await fullResponse.blob();
-    const totalSize = blob.size;
-    const mime      = fullResponse.headers.get('Content-Type') || 'video/mp4';
+// ── CacheFirst + LRU para multimedia del menú ────────────────────────────────
+async function handleMediaAsset(request) {
+  const mediaCache = await caches.open(MEDIA_CACHE);
 
-    if (!rangeHeader) {
-        // Sin cabecera Range: devolvemos el archivo completo
-        return new Response(blob, {
-            status: 200,
-            headers: {
-                'Content-Type':   mime,
-                'Content-Length': String(totalSize),
-                'Accept-Ranges':  'bytes',
-            }
-        });
+  // 1. Cache hit → respuesta inmediata (funciona offline)
+  const cached = await mediaCache.match(request);
+  if (cached) return cached;
+
+  // 2. Cache miss → intentar red
+  try {
+    const response = await fetch(request);
+
+    if (response.ok) {
+      const contentType = response.headers.get('Content-Type') || '';
+      // Solo cachear imágenes y videos; nunca cachear errores ni HTML accidental
+      if (contentType.startsWith('image/') || contentType.startsWith('video/')) {
+        const toCache = response.clone();
+        // No bloquear la respuesta — guardar en background
+        mediaCache.put(request, toCache).then(async () => {
+          // LRU manual: si superamos el límite, eliminar la entrada más antigua
+          const keys = await mediaCache.keys();
+          if (keys.length > MEDIA_MAX_ENTRIES) {
+            await mediaCache.delete(keys[0]);
+          }
+        }).catch(() => { /* silenciar errores de escritura de caché */ });
+      }
     }
 
-    // Parsear "bytes=<start>-<end>"
-    const match = rangeHeader.match(/bytes=(\d+)-(\d+)?/);
-    if (!match) {
-        return new Response('Invalid Range Header', {
-            status: 416,
-            headers: { 'Content-Range': `bytes */${totalSize}` }
-        });
-    }
-
-    const start = parseInt(match[1], 10);
-    const end   = match[2] !== undefined ? parseInt(match[2], 10) : totalSize - 1;
-
-    if (start >= totalSize || end >= totalSize || start > end) {
-        return new Response('Range Not Satisfiable', {
-            status: 416,
-            headers: { 'Content-Range': `bytes */${totalSize}` }
-        });
-    }
-
-    const sliced = blob.slice(start, end + 1);
-
-    return new Response(sliced, {
-        status:     206,
-        statusText: 'Partial Content',
-        headers: {
-            'Content-Type':   mime,
-            'Content-Range':  `bytes ${start}-${end}/${totalSize}`,
-            'Content-Length': String(sliced.size),
-            'Accept-Ranges':  'bytes',
-        }
-    });
+    return response;
+  } catch {
+    // Sin caché y sin red: 503 controlado
+    return new Response('', { status: 503, statusText: 'Media offline - not cached' });
+  }
 }
 
-// ─── Utilidades ───────────────────────────────────────────────────────────────
-function _shortName(url) {
-    try { return url.split('/').pop().split('?')[0]; } catch { return url; }
+// ── CacheFirst para assets propios ───────────────────────────────────────────
+async function handleAppAsset(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+
+  try {
+    const response = await fetch(request);
+    // Solo cachear respuestas exitosas de assets estáticos
+    if (response.ok && request.method === 'GET') {
+      const cache = await caches.open(SHELL_CACHE);
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    // Si falla y tampoco está en caché, devolver la página index como fallback SPA
+    const indexFallback = await caches.match('/index.html');
+    return indexFallback || new Response('Offline', { status: 503 });
+  }
 }
