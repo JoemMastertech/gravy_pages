@@ -72,7 +72,7 @@
       }
     }
   </script>
-  <script type="module" crossorigin src="./assets/index-BcozC8-g.js"></script>
+  <script type="module" crossorigin src="./assets/index-CqLxhkzH.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-CorqPrMk.css">
 </head>
 
@@ -219,11 +219,17 @@
             <span class="icon">🚪</span>
           </button>
 
-          <!-- Botón de Actualizar Catálogo -->
+           <!-- Botón de Actualizar Catálogo -->
           <div class="settings-divider"></div>
           <button id="sync-catalog-btn" class="nav-button"
             style="color: #4fc3f7;">
             <span>🔄 Actualizar Catálogo</span>
+          </button>
+          
+          <!-- Botón de Re-descargar Multimedia (Solo visible en Capacitor) -->
+          <button id="force-sync-media-btn" class="nav-button"
+            style="color: #81c784; display: none;">
+            <span>📥 Re-descargar Multimedia</span>
           </button>
 
           <!-- Botón de Cerrar Modo Mesero -->
@@ -288,7 +294,13 @@
     <!-- ─── Motor de Caché Inteligente (Service Worker) ─── -->
     <!-- Intercepts Supabase Storage requests to cache media locally and cut Egress usage -->
     <script>
-      if ('serviceWorker' in navigator) {
+      // Registrar Service Worker solo en Web (evitar en Capacitor/APK nativo)
+      const isCapacitor = typeof window !== 'undefined'
+        && !!window.Capacitor
+        && typeof window.Capacitor.isNativePlatform === 'function'
+        && window.Capacitor.isNativePlatform();
+
+      if (!isCapacitor && 'serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           // Calcular el path base dinámicamente para soportar subdirectorios (ej: GitHub Pages)
           const baseDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
@@ -311,6 +323,8 @@
             console.log('[Media Cache] 🔄 Service Worker actualizado.');
           });
         });
+      } else if (isCapacitor) {
+        console.log('[Media Cache] 📱 Ejecutando en entorno nativo (Capacitor). Desactivando Service Worker de forma intencionada.');
       } else {
         console.warn('[Media Cache] ⚠️ Service Workers no soportados en este browser.');
       }
