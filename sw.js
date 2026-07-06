@@ -147,13 +147,16 @@ async function handleMediaAsset(request) {
       if (contentType.startsWith('image/') || contentType.startsWith('video/')) {
         const toCache = response.clone();
         // No bloquear la respuesta — guardar en background
-        mediaCache.put(request, toCache).then(async () => {
-          // LRU manual: si superamos el límite, eliminar la entrada más antigua
-          const keys = await mediaCache.keys();
-          if (keys.length > MEDIA_MAX_ENTRIES) {
-            await mediaCache.delete(keys[0]);
-          }
-        }).catch(() => { /* silenciar errores de escritura de caché */ });
+        // La API de caché no soporta respuestas parciales (HTTP 206)
+        if (toCache.status !== 206) {
+          mediaCache.put(request, toCache).then(async () => {
+            // LRU manual: si superamos el límite, eliminar la entrada más antigua
+            const keys = await mediaCache.keys();
+            if (keys.length > MEDIA_MAX_ENTRIES) {
+              await mediaCache.delete(keys[0]);
+            }
+          }).catch(() => { /* silenciar errores de escritura de caché */ });
+        }
       }
     }
 
@@ -166,13 +169,18 @@ async function handleMediaAsset(request) {
 
 // ── CacheFirst para assets propios ───────────────────────────────────────────
 async function handleAppAsset(request) {
+  // Si la petición pide un rango (Range), no la cacheamos y la dejamos pasar directo a la red
+  if (request.headers.has('range')) {
+    return fetch(request);
+  }
+
   const cached = await caches.match(request);
   if (cached) return cached;
 
   try {
     const response = await fetch(request);
-    // Solo cachear respuestas exitosas de assets estáticos
-    if (response.ok && request.method === 'GET') {
+    // Solo cachear respuestas estrictamente exitosas completas (status 200) de assets estáticos
+    if (response.status === 200 && request.method === 'GET') {
       const cache = await caches.open(SHELL_CACHE);
       cache.put(request, response.clone());
     }
