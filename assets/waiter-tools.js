@@ -6,7 +6,7 @@ ${t}`:t}const Ee="ENTRIES",pe="KEYS",be="VALUES",T="";class G{constructor(e,t){c
 RECOMENDACIONES PROACTIVAS (usa show_recommendation_carousel):
 Puedes sugerir cualquiera de estas listas de productos cuando el cliente pida sugerencias o recomendaciones generales:
 ${t.map(d=>`- "${d.title}" (ID: ${d.id})`).join(`
-`)}`:"";let c="";try{const{cartItems:d}=await ke(async()=>{const{cartItems:p}=await import("./index.js").then(b=>b.aW);return{cartItems:p}},__vite__mapDeps([0,1]),import.meta.url),f=d.value||[];f.length>0&&(c=`Productos actuales en el carrito del cliente:
+`)}`:"";let c="";try{const{cartItems:d}=await ke(async()=>{const{cartItems:p}=await import("./index.js").then(b=>b.aV);return{cartItems:p}},__vite__mapDeps([0,1]),import.meta.url),f=d.value||[];f.length>0&&(c=`Productos actuales en el carrito del cliente:
 `+f.map(p=>`- ${p.name} ($${p.price})`).join(`
 `))}catch{}let u="";if(typeof sessionStorage<"u"){const d=sessionStorage.getItem("current_table_id")||sessionStorage.getItem("current_table_token");d&&(u=`Mesa activa del cliente: Mesa ${d}.`)}return[r,`Trabajas en: ${s}.`,u,`Secciones disponibles: ${a.join(", ")}.`,o!=null&&o.ultima_categoria?`Última sección visitada: ${o.ultima_categoria}. Puedes sugerir algo relacionado.`:"",l,c,"Responde en texto plano. Sin asteriscos ni markdown."].filter(Boolean).join(`
 `)}async function nt(o,e,t){switch(o){case"search_menu":{const{query:n}=e;try{return`INSTRUCCIÓN DE FORMATO CRÍTICA: Responde en TEXTO PLANO. 
