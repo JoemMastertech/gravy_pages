@@ -167,15 +167,12 @@ async function handleMediaAsset(request) {
   }
 }
 
-// ── CacheFirst para assets propios ───────────────────────────────────────────
+// ── NetworkFirst para assets propios (App Shell) ──────────────────────────────
 async function handleAppAsset(request) {
   // Si la petición pide un rango (Range), no la cacheamos y la dejamos pasar directo a la red
   if (request.headers.has('range')) {
     return fetch(request);
   }
-
-  const cached = await caches.match(request);
-  if (cached) return cached;
 
   try {
     const response = await fetch(request);
@@ -186,7 +183,11 @@ async function handleAppAsset(request) {
     }
     return response;
   } catch {
-    // Si falla y tampoco está en caché, devolver la página index como fallback SPA
+    // Si falla la red, intentar buscar en caché
+    const cached = await caches.match(request);
+    if (cached) return cached;
+
+    // Si tampoco está en caché, devolver la página index como fallback SPA
     const indexFallback = await caches.match('/index.html');
     return indexFallback || new Response('Offline', { status: 503 });
   }
