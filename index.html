@@ -135,6 +135,28 @@
             aria-label="Abrir asistente Joe"
           >
           </button>
+          <!-- Badge de Mesa (visible solo en modo Comensal) -->
+          <span id="current-table-badge"
+            class="current-table-badge u-hidden"
+            style="display: none;"
+            title="Mesa actual">
+          </span>
+          <!-- Botón Solicitar Atención (visible solo en modo Comensal) -->
+          <button id="header-request-attention-btn"
+            class="nav-button top-nav-btn customer-only-btn u-hidden"
+            style="display: none;"
+            title="Solicitar atención del mesero"
+            data-translate-target="true" data-key="nav-request-attention">
+            <span class="material-icons-round">notifications_active</span>
+          </button>
+          <!-- Botón Pedir Cuenta (visible solo en modo Comensal) -->
+          <button id="header-request-bill-btn"
+            class="nav-button top-nav-btn customer-only-btn u-hidden"
+            style="display: none;"
+            title="Pedir la cuenta"
+            data-translate-target="true" data-key="nav-request-bill">
+            <span class="material-icons-round">receipt_long</span>
+          </button>
           <button id="settings-btn" class="nav-button top-nav-btn">⚙️</button>
         </div>
       </div>
