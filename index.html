@@ -102,10 +102,45 @@
           <span id="nav-title"></span>
         </div>
         <div class="nav-buttons-container">
+          <!-- Badge de Mesa (visible solo en modo Comensal) -->
+          <span id="current-table-badge"
+            class="current-table-badge btn-text-mode u-hidden"
+            style="display: none;"
+            title="Mesa actual">
+          </span>
           <button id="header-create-order-btn" class="nav-button top-nav-btn btn-text-mode" title="Crear Orden"
             data-translate-target="true" data-key="nav-create-order">
             Crear<br>Orden
           </button>
+          <!-- Botón Solicitar Atención (visible solo en modo Comensal) -->
+          <button id="header-request-attention-btn"
+            class="nav-button top-nav-btn btn-text-mode customer-only-btn u-hidden"
+            style="display: none;"
+            title="Solicitar atención del mesero"
+            data-translate-target="true" data-key="nav-request-attention">
+            Solicitar<br>Atención
+          </button>
+          <!-- Botón Pedir Cuenta (visible solo en modo Comensal) -->
+          <button id="header-request-bill-btn"
+            class="nav-button top-nav-btn btn-text-mode customer-only-btn u-hidden"
+            style="display: none;"
+            title="Pedir la cuenta"
+            data-translate-target="true" data-key="nav-request-bill">
+            Pedir<br>Cuenta
+          </button>
+          <button id="view-toggle-btn" class="nav-button top-nav-btn view-toggle-btn" title="Cambiar vista">🔲</button>
+          <!-- Mini Joe: visible solo en portrait con orden abierta (CSS toggle via :has) -->
+          <button 
+            id="nav-joe-mini-btn"
+            class="nav-button top-nav-btn joe-mini-nav-btn"
+            title="Hablar con Joe"
+            onclick="window.dispatchEvent(new CustomEvent('waiter:controlar_chat', { detail: { accion: 'expandir' } }))"
+            aria-label="Abrir asistente Joe"
+          >
+          </button>
+          <button id="settings-btn" class="nav-button top-nav-btn">⚙️</button>
+
+          <!-- Botones de administración / personal (ocultos por RLS/FSM según corresponda) -->
           <button id="header-qr-access-btn" class="nav-button top-nav-btn btn-text-mode" title="Acceso QR"
             data-translate-target="true" data-key="nav-qr-access">
             Acceso<br>QR
@@ -125,39 +160,6 @@
           <button id="header-waiter-tables-btn" class="nav-button top-nav-btn waiter-only-btn" title="Mis Mesas">
             <span class="material-icons-round">table_restaurant</span>
           </button>
-          <button id="view-toggle-btn" class="nav-button top-nav-btn view-toggle-btn" title="Cambiar vista">🔲</button>
-          <!-- Mini Joe: visible solo en portrait con orden abierta (CSS toggle via :has) -->
-          <button 
-            id="nav-joe-mini-btn"
-            class="nav-button top-nav-btn joe-mini-nav-btn"
-            title="Hablar con Joe"
-            onclick="window.dispatchEvent(new CustomEvent('waiter:controlar_chat', { detail: { accion: 'expandir' } }))"
-            aria-label="Abrir asistente Joe"
-          >
-          </button>
-          <!-- Badge de Mesa (visible solo en modo Comensal) -->
-          <span id="current-table-badge"
-            class="current-table-badge u-hidden"
-            style="display: none;"
-            title="Mesa actual">
-          </span>
-          <!-- Botón Solicitar Atención (visible solo en modo Comensal) -->
-          <button id="header-request-attention-btn"
-            class="nav-button top-nav-btn btn-text-mode customer-only-btn u-hidden"
-            style="display: none;"
-            title="Solicitar atención del mesero"
-            data-translate-target="true" data-key="nav-request-attention">
-            Solicitar<br>Atención
-          </button>
-          <!-- Botón Pedir Cuenta (visible solo en modo Comensal) -->
-          <button id="header-request-bill-btn"
-            class="nav-button top-nav-btn btn-text-mode customer-only-btn u-hidden"
-            style="display: none;"
-            title="Pedir la cuenta"
-            data-translate-target="true" data-key="nav-request-bill">
-            Pedir<br>Cuenta
-          </button>
-          <button id="settings-btn" class="nav-button top-nav-btn">⚙️</button>
         </div>
       </div>
     </div>
