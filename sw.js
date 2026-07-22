@@ -132,39 +132,94 @@ async function handleSupabaseRequest(request, url) {
 // ── CacheFirst + LRU para multimedia del menú ────────────────────────────────
 async function handleMediaAsset(request) {
   const mediaCache = await caches.open(MEDIA_CACHE);
+  const rangeHeader = request.headers.get('range');
 
-  // 1. Cache hit → respuesta inmediata (funciona offline)
+  if (rangeHeader) {
+    // Petición con rango: buscamos la versión completa en caché usando una petición limpia (sin rango)
+    const cleanRequest = new Request(request.url);
+    const cachedResponse = await mediaCache.match(cleanRequest);
+
+    if (cachedResponse) {
+      try {
+        return await buildRangeResponse(cachedResponse, rangeHeader);
+      } catch (err) {
+        console.warn('[Media Cache] Error construyendo respuesta parcial desde caché, usando red:', err);
+      }
+    }
+
+    // Cache miss de petición con rango: descargamos completo, guardamos y servimos el rango solicitado
+    try {
+      const response = await fetch(cleanRequest);
+      if (response.ok) {
+        const contentType = response.headers.get('Content-Type') || '';
+        if (contentType.startsWith('image/') || contentType.startsWith('video/')) {
+          await mediaCache.put(cleanRequest, response.clone());
+        }
+        return await buildRangeResponse(response, rangeHeader);
+      }
+      return response;
+    } catch (err) {
+      console.error('[Media Cache] Fallo descarga con rango:', err);
+      return new Response('', { status: 503, statusText: 'Media offline - not cached' });
+    }
+  }
+
+  // Petición estándar (sin rango)
   const cached = await mediaCache.match(request);
   if (cached) return cached;
 
-  // 2. Cache miss → intentar red
   try {
     const response = await fetch(request);
 
     if (response.ok) {
       const contentType = response.headers.get('Content-Type') || '';
-      // Solo cachear imágenes y videos; nunca cachear errores ni HTML accidental
       if (contentType.startsWith('image/') || contentType.startsWith('video/')) {
         const toCache = response.clone();
-        // No bloquear la respuesta — guardar en background
-        // La API de caché no soporta respuestas parciales (HTTP 206)
         if (toCache.status !== 206) {
           mediaCache.put(request, toCache).then(async () => {
-            // LRU manual: si superamos el límite, eliminar la entrada más antigua
             const keys = await mediaCache.keys();
             if (keys.length > MEDIA_MAX_ENTRIES) {
               await mediaCache.delete(keys[0]);
             }
-          }).catch(() => { /* silenciar errores de escritura de caché */ });
+          }).catch(() => {});
         }
       }
     }
 
     return response;
   } catch {
-    // Sin caché y sin red: 503 controlado
     return new Response('', { status: 503, statusText: 'Media offline - not cached' });
   }
+}
+
+// ── Constructor de Respuestas Parciales (HTTP 206) desde respuestas completas ──
+async function buildRangeResponse(response, rangeHeader) {
+  const blob = await response.blob();
+  const size = blob.size;
+  const parts = rangeHeader.replace(/bytes=/, "").split("-");
+  const start = parseInt(parts[0], 10);
+  const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
+
+  // Validación de límites de rango
+  if (start >= size || end >= size) {
+    return new Response('', {
+      status: 416,
+      statusText: 'Requested Range Not Satisfiable',
+      headers: { 'Content-Range': `bytes */${size}` }
+    });
+  }
+
+  const chunk = blob.slice(start, end + 1);
+  const headers = new Headers(response.headers);
+  headers.set('Content-Range', `bytes ${start}-${end}/${size}`);
+  headers.set('Content-Length', chunk.size);
+  headers.set('Accept-Ranges', 'bytes');
+
+  return new Response(chunk, {
+    status: 206,
+    statusText: 'Partial Content',
+    headers: headers
+  });
 }
 
 // ── NetworkFirst para assets propios (App Shell) ──────────────────────────────
