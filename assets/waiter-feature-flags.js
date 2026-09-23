@@ -1,0 +1,1 @@
+const r={enabled:!0,trafficPercentage:10,logOnly:!0};function f(e){return!r.enabled||!e?!1:e.split("").reduce((t,a)=>t+a.charCodeAt(0),0)%100<r.trafficPercentage}export{r as WAITER_SHADOW_MODE,f as isShadowModeTraffic};

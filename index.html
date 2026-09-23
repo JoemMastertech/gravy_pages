@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' http: https: ws: wss: data: blob: capacitor: 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http: https:; style-src 'self' 'unsafe-inline' http: https: https://fonts.googleapis.com; font-src 'self' data: https: https://fonts.gstatic.com https://fonts.googleapis.com; img-src 'self' data: blob: http: https: capacitor: https://localhost https://cdn.joe-menu.com; media-src 'self' http: https: data: blob: capacitor: https://localhost https://cdn.joe-menu.com; connect-src * 'self' http: https: ws: wss:;">
+
+  <script>
+    // Polyfill defensivo para el Puente Nativo de Capacitor en Live Reload
+    if (typeof window !== 'undefined') {
+      window.Capacitor = window.Capacitor || {};
+      if (!window.Capacitor.triggerEvent) {
+        window.Capacitor.triggerEvent = function(eventName, target, eventData) {
+          console.warn('[CapacitorBridge] Evento nativo prevenido:', eventName, target, eventData);
+          return true;
+        };
+      }
+    }
+  </script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Master Technology Bar - Coctelería Premium</title>
+
+  <!-- Favicon & PWA Icons -->
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="manifest" href="./site.webmanifest">
+  <meta name="theme-color" content="#0a0e17">
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="Master Technology Bar - Experiencia premium en coctelería con tecnología avanzada. Descubre nuestros cócteles únicos y ambiente innovador.">
+  <meta name="keywords" content="coctelería, bar, cócteles, bebidas premium, tecnología, Master Technology Bar">
+  <meta name="author" content="Master Technology Bar">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://localhost:8000/">
+  <meta property="og:title" content="Master Technology Bar - Coctelería Premium">
+  <meta property="og:description"
+    content="Experiencia premium en coctelería con tecnología avanzada. Descubre nuestros cócteles únicos y ambiente innovador.">
+  <meta property="og:image" content="">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="http://localhost:8000/">
+  <meta property="twitter:title" content="Master Technology Bar - Coctelería Premium">
+  <meta property="twitter:description"
+    content="Experiencia premium en coctelería con tecnología avanzada. Descubre nuestros cócteles únicos y ambiente innovador.">
+  <meta property="twitter:image" content="">
+
+  <!-- Google Fonts: Inter, Playfair Display & Material Icons Round -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round">
+
+  <!-- CSS Source (Vite auto-compiles SCSS) -->
+
+  <!-- Runtime feature flags -->
+  <!-- Runtime feature flags handled by Vite -->
+  <script src="./libs/purify.min.js"></script>
+
+  <!-- Anti-FOUC Font Fix: Force Playfair for titles immediately -->
+  <style>
+    .welcome-text,
+    .title-text,
+    .category-title,
+    .page-title {
+      font-family: 'Playfair Display', serif !important;
+    }
+    /* Frame 0 Black Canvas Guard: Zero flash of theme color */
+    html, body {
+      background-color: #000000 !important;
+    }
+    #background-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      background-color: #000000;
+      pointer-events: none;
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    #background-video::-webkit-media-controls {
+      display: none !important;
+      -webkit-appearance: none;
+    }
+    #background-video::-webkit-media-controls-start-playback-button,
+    #background-video::-webkit-media-controls-play-button,
+    #background-video::-webkit-media-controls-overlay-play-button {
+      display: none !important;
+      -webkit-appearance: none;
+      opacity: 0 !important;
+    }
+  </style>
+
+  <!-- 🕵️ DIAGNÓSTICO DE RECARGAS DE VITE (Externalizado para evitar errores de proxy) 🕵️ -->
+
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.47.10",
+        "zod": "https://cdn.jsdelivr.net/npm/zod@3.23.8/+esm"
+      }
+    }
+  </script>
+  <script type="module" crossorigin src="./assets/index.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index.css">
+</head>
+
+<body>
+  <!-- Early Theme Injector: Applies user preference BEFORE initial paint to avoid FOUC/Flash of Red -->
+  <script src="./theme-injector.js"></script>
+
+  <!-- Background video (Source set by Early Injector; fallback embebido para offline) -->
+  <video id="background-video" autoplay muted loop playsinline webkit-playsinline disablePictureInPicture disableremoteplayback poster="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=" style="background-color: #000000;">
+    <source src="assets/offline-background.mp4" type="video/mp4">
+  </video>
+
+  <div id="app" class="app-container">
+    <!-- Top Navigation Bar (Integrated into Container) -->
+    <div id="top-nav-bar" class="top-nav-bar top-nav-hidden">
+      <div class="top-nav-content">
+        <div class="nav-left">
+          <button id="hamburger-btn" class="hamburger-btn hamburger-hidden">☰</button>
+          <button id="top-back-btn" class="top-nav-btn back-btn-hidden" title="Volver a Licores">←</button>
+        </div>
+        <div class="nav-center">
+          <button id="home-btn" class="nav-button top-nav-btn home-btn" title="Ir al Inicio">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>
+          </button>
+          <span id="nav-title"></span>
+        </div>
+        <div class="nav-buttons-container">
+          <!-- Badge de Mesa (visible solo en modo Comensal) -->
+          <button id="current-table-badge"
+            class="current-table-badge btn-text-mode u-hidden"
+            style="display: none;"
+            title="Mesa actual">
+          </button>
+          <button id="register-btn" class="nav-button top-nav-btn btn-text-mode" title="Registrarse"
+            data-translate-target="true" data-key="nav.register">
+            Registrarse
+          </button>
+          <button id="login-btn" class="nav-button top-nav-btn btn-text-mode" title="Iniciar Sesión"
+            data-translate="true" data-key="nav.login" data-namespace="general" data-original-text="Iniciar Sesión" data-original-html="Iniciar&lt;br&gt;Sesión">
+            Iniciar<br>Sesión
+          </button>
+          <button id="header-qr-access-btn" class="nav-button top-nav-btn btn-text-mode" title="Acceso QR"
+            data-translate-target="true" data-key="nav.qrAccess">
+            Acceso<br>QR
+          </button>
+          <button id="header-create-order-btn" class="nav-button top-nav-btn btn-text-mode" title="Crear Orden"
+            data-translate="true" data-key="nav.createOrder" data-namespace="general" data-original-text="Crear Orden" data-original-html="Crear&lt;br&gt;Orden">
+            Crear<br>Orden
+          </button>
+          <!-- Botón Solicitar Atención (visible solo en modo Comensal) -->
+          <button id="header-request-attention-btn"
+            class="nav-button top-nav-btn btn-text-mode customer-only-btn u-hidden"
+            style="display: none;"
+            title="Solicitar atención del mesero"
+            data-translate-target="true" data-key="nav.requestAttention">
+            Solicitar Atención
+          </button>
+          <!-- Botón Pedir Cuenta (visible solo en modo Comensal) -->
+          <button id="header-request-bill-btn"
+            class="nav-button top-nav-btn btn-text-mode customer-only-btn u-hidden"
+            style="display: none;"
+            title="Pedir la cuenta"
+            data-translate-target="true" data-key="nav.requestBill">
+            Pedir Cuenta
+          </button>
+          <button id="view-toggle-btn" class="nav-button top-nav-btn view-toggle-btn" title="Cambiar vista">🔲</button>
+          <!-- Mini Joe: visible solo en portrait con orden abierta (CSS toggle via :has) -->
+          <button
+            id="nav-joe-mini-btn"
+            class="nav-button top-nav-btn joe-mini-nav-btn"
+            title="Hablar con Joe"
+            onclick="window.dispatchEvent(new CustomEvent('waiter:controlar_chat', { detail: { accion: 'expandir' } }))"
+            aria-label="Abrir asistente Joe"
+          >
+          </button>
+          <button id="settings-btn" class="nav-button top-nav-btn">⚙️</button>
+          <button id="header-waiter-notifications-btn" class="nav-button top-nav-btn waiter-only-btn" title="Notificaciones">
+            <span class="material-icons-round">notifications</span>
+            <span class="waiter-bell-badge" style="display: none;">0</span>
+          </button>
+          <button id="header-waiter-tables-btn" class="nav-button top-nav-btn waiter-only-btn" title="Mis Mesas">
+            <span class="material-icons-round">table_restaurant</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screens -->
+    <div class="screen welcome-screen">
+      <h1 class="welcome-text" data-translate-target="true" data-translate="main.welcome">¡BIENVENIDOS!</h1>
+    </div>
+    <div class="screen logo-screen screen-hidden">
+      <div class="logo-container">
+        <img src="" alt="Master Technology Bar Logo" class="logo">
+        <h2 class="title-text u-hidden" data-translate-target="true" data-translate="main.title" style="display:none"></h2>
+      </div>
+    </div>
+    <div class="screen category-title-screen screen-hidden">
+      <h2 class="category-title" data-translate-target="true" data-translate="categories.cocktails">Coctelería</h2>
+    </div>
+    <div class="screen main-content-screen screen-hidden" data-category="cocteleria">
+      <div class="page-header">
+        <!-- Page title removed from here as it's now integrated into tables -->
+      </div>
+      <div class="content-wrapper">
+        <div class="content-container-flex">
+          <div id="content-container" class="content-container">
+            <div id="slot-a" class="slot active" aria-live="polite"></div>
+            <div id="slot-b" class="slot hidden" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Order Sidebar injected dynamically by OrderDrawer.mount() (Phase 3) -->
+
+    <!-- SaaS Property Editor Sidebar (Admin Only) -->
+
+    <!-- SaaS Property Editor Sidebar (Admin Only) -->
+    <!-- Coexists in Grid Layout (Column 3) -->
+    <div id="property-editor-sidebar" class="property-sidebar">
+      <!-- Preact handles the entire internal structure and grid -->
+      <div id="property-editor-preact-root"></div>
+    </div>
+
+    <!-- Modals (Dynamically injected) -->
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="drawer-menu" class="drawer-menu">
+      <div class="drawer-content">
+        <!-- Navigation buttons added dynamically -->
+      </div>
+    </div>
+
+    <!-- Settings Menu -->
+    <div id="settings-menu" class="drawer-menu settings-menu">
+      <div class="drawer-content">
+        <!-- Main Settings Panel -->
+        <div id="main-settings-panel" class="settings-panel">
+          <button id="settings-back-btn" class="back-button">→</button>
+          <h3 class="settings-title"></h3>
+          <button id="languages-option" class="nav-button" data-translate-target="true"
+            data-translate="settings.languages">Idiomas</button>
+          <button id="dark-mode-option" class="nav-button" data-translate-target="true"
+            data-translate="settings.dark_mode">Modo Oscuro</button>
+          <button id="light-mode-option" class="nav-button" data-translate-target="true"
+            data-translate="settings.light_mode">Modo Claro</button>
+
+
+
+          <!-- Sección de Administración (SaaS) -->
+          <div class="settings-divider"></div>
+          <button id="admin-mode-option" class="nav-button admin-option-btn">
+            <span data-translate-target="true" data-translate="settings.adminEditPanel" data-key="settings.adminEditPanel" data-original-text="Panel de Edición">Panel de Edición</span>
+            <span id="admin-indicator-icon" class="icon">⚙️</span>
+          </button>
+          <div id="editor-active-status" class="u-hidden" data-translate-target="true" data-key="settings.editorModeActive">Modo Edición</div>
+
+          <!-- Botón de Cerrar Sesión (Sólo visible logueado) -->
+          <button id="logout-option" class="nav-button logout-option-btn u-hidden"
+            style="display: none; color: #ff4d4d;"
+            data-translate-target="true" data-key="settings.logout">
+            <span>Cerrar Sesión</span>
+          </button>
+
+          <!-- Descarga offline manual (solo APK con sesión activa) -->
+          <div id="offline-settings-container" class="u-hidden" style="display: none;">
+            <div class="settings-divider"></div>
+            <button id="sync-catalog-btn" class="nav-button"
+              style="color: #4fc3f7;"
+              data-translate-target="true" data-key="settings.updateMenu">
+              <span>Descargar menú</span>
+            </button>
+            <details id="offline-download-status" class="offline-accordion nav-button"
+              style="margin: 12px 0; padding: 0; font-size: 0.64rem; width: 100%; box-sizing: border-box; overflow: hidden; display: none;">
+              <summary style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; cursor: pointer; user-select: none; outline: none; list-style: none;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span id="offline-status-badge" style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #38bdf8;"></span>
+                  <strong data-offline-title style="font-weight: 600; font-size: 0.66rem;">Estado offline</strong>
+                </div>
+                <span id="offline-accordion-chevron" style="font-size: 0.6rem; transition: transform 0.25s ease;">▼</span>
+              </summary>
+              <div style="padding: 0 12px 12px 12px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                <div data-offline-summary style="display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0 6px 0;"></div>
+                <ul data-offline-list style="margin: 6px 0; padding-left: 14px; max-height: 100px; overflow-y: auto; overflow-x: hidden; word-break: break-all; color: #94a3b8; font-size: 0.58rem;"></ul>
+                <button id="offline-download-retry-btn" type="button" class="nav-button" style="margin-top: 6px; padding: 4px 10px; font-size: 0.6rem;">Reintentar faltantes</button>
+              </div>
+            </details>
+          </div>
+
+          <!-- Botón de Cerrar Modo Mesero -->
+          <button id="waiter-logout-btn" class="nav-button waiter-only-btn"
+            style="display: none; color: #ff9800;">
+            <span>Cerrar Modo Mesero</span>
+            <span class="icon">🏃</span>
+          </button>
+
+          <!-- Botón de Salir de Modo Kiosco / Desvincular Mesa -->
+          <button id="unlink-kiosk-option" class="nav-button logout-option-btn u-hidden"
+            style="display: none; color: #ff4d4d;"
+            data-translate-target="true" data-key="settings.unlinkKiosk">
+            <span>Salir de Modo Kiosco</span>
+            <span class="icon">🚪</span>
+          </button>
+        </div>
+
+        <!-- Languages Panel -->
+        <div id="languages-panel" class="settings-panel u-hidden">
+          <button id="back-to-main" class="back-button">←</button>
+          <h3 class="settings-title" data-translate-target="true" data-translate="settings.languages">Idiomas</h3>
+          <button class="nav-button language-btn" data-lang="es" data-translate-target="true"
+            data-translate="languages.spanish">Español</button>
+          <button class="nav-button language-btn" data-lang="en" data-translate-target="true"
+            data-translate="languages.english">Inglés</button>
+          <button class="nav-button language-btn" data-lang="fr" data-translate-target="true"
+            data-translate="languages.french">Francés</button>
+          <button class="nav-button language-btn" data-lang="it" data-translate-target="true"
+            data-translate="languages.italian">Italiano</button>
+          <button class="nav-button language-btn" data-lang="zh" data-translate-target="true"
+            data-translate="languages.chinese">Chino</button>
+        </div>
+
+        <!-- Dark Mode Panel -->
+        <div id="dark-mode-panel" class="settings-panel u-hidden">
+          <button id="back-from-dark" class="back-button">←</button>
+          <h3 class="settings-title" data-translate-target="true" data-translate="settings.dark_mode">Modo Oscuro</h3>
+          <button class="nav-button theme-btn" data-set-theme="bg_dark_blue" data-video="" data-translate-target="true"
+            data-translate="themes.dark_blue">Negro-Azul</button>
+          <button class="nav-button theme-btn" data-set-theme="bg_dark_red" data-video="" data-translate-target="true"
+            data-translate="themes.dark_red">Negro-Rojo</button>
+          <button class="nav-button theme-btn" data-set-theme="bg_dark_green" data-video="" data-translate-target="true"
+            data-translate="themes.dark_green">Negro-Verde</button>
+          <button class="nav-button theme-btn" data-set-theme="bg_light_blue" data-video="" data-translate-target="true"
+            data-translate="themes.light_blue">Negro-Gris</button>
+        </div>
+
+        <!-- Light Mode Panel -->
+        <div id="light-mode-panel" class="settings-panel u-hidden">
+          <button id="back-from-light" class="back-button">←</button>
+          <h3 class="settings-title" data-translate-target="true" data-translate="settings.light_mode">Modo Claro</h3>
+          <button class="nav-button theme-btn" data-set-theme="bg_white" data-video="" data-translate-target="true"
+            data-translate="themes.white">Blanco</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Scripts -->
+
+    <!-- Order Sidebar (Right) - Now integrated in Grid -->
+    <!-- Moved to inside .app-container via script or manual internal placement -->
+    <!-- Wait, I need to DELETE it from here and INSERT it above -->
+
+    <!-- Load data providers -->
+
+    <!-- Load UI components -->
+    <!-- Load order system -->
+    <!-- Initialize app -->
+
+    <!-- ─── Motor de Caché Inteligente (Service Worker) ─── -->
+    <!-- Intercepts Supabase Storage requests to cache media locally and cut Egress usage -->
+    <script>
+      // Registrar Service Worker solo en Web (evitar en Capacitor/APK nativo)
+      const isCapacitor = typeof window !== 'undefined'
+        && !!window.Capacitor
+        && typeof window.Capacitor.isNativePlatform === 'function'
+        && window.Capacitor.isNativePlatform();
+
+      if (!isCapacitor && 'serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          // Calcular el path base dinámicamente para soportar subdirectorios (ej: GitHub Pages)
+          const baseDir = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+          const swUrl = baseDir + 'sw.js';
+
+          navigator.serviceWorker.register(swUrl, { scope: baseDir })
+            .then(registration => {
+              console.log('[Media Cache] ✅ Service Worker armado y operando en:', registration.scope);
+              // Force immediate activation if waiting
+              if (registration.waiting) {
+                registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+              }
+            })
+            .catch(err => {
+              console.warn('[Media Cache] ⚠️ Fallo la inicialización del SW:', err);
+            });
+
+          // Listen for SW updates
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('[Media Cache] 🔄 Service Worker actualizado.');
+          });
+        });
+      } else if (isCapacitor) {
+        console.log('[Media Cache] 📱 Ejecutando en entorno nativo (Capacitor). Desactivando Service Worker de forma intencionada.');
+      } else {
+        console.warn('[Media Cache] ⚠️ Service Workers no soportados en este browser.');
+      }
+    </script>
+  <div id="offline-sync-bar" class="offline-sync-bar u-hidden">
+    <div class="sync-progress-container">
+      <span class="sync-text">Sincronizando catálogo offline... <span id="sync-percentage">0%</span></span>
+      <div class="sync-progress-track">
+        <div id="sync-progress-fill" class="sync-progress-fill"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
